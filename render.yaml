@@ -15,7 +15,10 @@ services:
     plan: free
     region: frankfurt
     branch: main
-    buildCommand: npm ci && npm run build
+    # --include=dev je nutné: NODE_ENV=production nižšie inak spôsobí, že
+    # npm ci preskočí devDependencies — a tailwindcss aj @tailwindcss/postcss
+    # sú práve tam, takže build spadne na chýbajúcom PostCSS plugine.
+    buildCommand: npm ci --include=dev && npm run build
     # Migrácie bežia pri štarte, nie cez preDeployCommand — ten je na
     # Renderi dostupný až v platených plánoch. Drizzle si applikované
     # migrácie eviduje, takže opakované spustenie nič nepokazí.

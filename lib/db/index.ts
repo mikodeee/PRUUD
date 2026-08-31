@@ -19,6 +19,20 @@ type Db = PgDatabase<never, typeof schema>;
 
 const globalForDb = globalThis as unknown as { pruudDb?: Db };
 
+/**
+ * Nastavenie TLS pre spravovaný Postgres.
+ *
+ * Keď connection string sám určuje `sslmode`, necháme rozhodnutie na
+ * ovládači `pg` a nič nevnucujeme. Lokálna databáza beží bez TLS.
+ * Inak zapneme TLS, ale bez overovania reťazca — Render, Neon aj Supabase
+ * podpisujú vlastnou autoritou a prísne overenie by spojenie zhodilo.
+ */
+function sslConfig(connectionString: string) {
+  if (/[?&]sslmode=/.test(connectionString)) return undefined;
+  if (/@(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(connectionString)) return false;
+  return { rejectUnauthorized: false };
+}
+
 async function createDb(): Promise<Db> {
   const connectionString = process.env.DATABASE_URL;
 
@@ -26,13 +40,10 @@ async function createDb(): Promise<Db> {
     const { Pool } = await import("pg");
     const { drizzle } = await import("drizzle-orm/node-postgres");
 
+    const ssl = sslConfig(connectionString);
     const pool = new Pool({
       connectionString,
-      // Spravovaný Postgres (Render, Neon, Supabase) vyžaduje TLS, ale
-      // podpisuje vlastnou autoritou — overenie reťazca by spojenie zhodilo.
-      ssl: connectionString.includes("localhost")
-        ? false
-        : { rejectUnauthorized: false },
+      ...(ssl === undefined ? {} : { ssl }),
       max: 5,
     });
 
