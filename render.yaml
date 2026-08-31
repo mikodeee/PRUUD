@@ -1,0 +1,41 @@
+# Render Blueprint pre PRUUD.
+# V Renderi: New → Blueprint → vybrať tento repozitár. Vytvorí sa web
+# služba aj Postgres databáza a prepoja sa medzi sebou.
+
+databases:
+  - name: pruud-db
+    databaseName: pruud
+    plan: free
+    postgresMajorVersion: "16"
+
+services:
+  - type: web
+    name: pruud
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: npm ci && npm run build
+    # Migrácie bežia pri štarte — schéma sa tak dorovná pri každom nasadení.
+    preDeployCommand: npm run db:migrate
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pruud-db
+          property: connectionString
+      - key: NODE_VERSION
+        value: "24.20.0"
+      - key: NODE_ENV
+        value: production
+      # Notifikácie z formulárov. Bez kľúča sa správy len logujú.
+      - key: RESEND_API_KEY
+        sync: false
+      - key: NOTIFY_EMAIL
+        sync: false
+      # Napojenie na EDC/OKTE — doplniť po podpise zmluvy o poskytovaní údajov.
+      - key: EDC_API_URL
+        sync: false
+      - key: EDC_API_TOKEN
+        sync: false
