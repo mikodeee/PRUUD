@@ -48,6 +48,7 @@ adresu `/portal/admin` napíše ručne, dostane 404.
 | `npm run lint` | ESLint |
 | `npm test` | testy výpočtovej logiky |
 | `npm run db:reset` | zmaže a znova vytvorí lokálnu databázu s demo dátami |
+| `npm run db:make-admin -- email` | povýši existujúci účet na správcu |
 
 ## Architektúra
 
@@ -130,6 +131,33 @@ string, ktorý funguje naprieč regiónmi (za cenu vyššej latencie).
 - **Web služba po nečinnosti zaspí**, prvý request potom trvá aj minútu.
 - `preDeployCommand` je platená funkcia, preto migrácie bežia
   v `startCommand`.
+
+### Čo robiť po prvom úspešnom nasadení
+
+Po vytvorení databázy sa migrácie spustia samy a schéma vznikne, databáza
+je však **prázdna** — nie je v nej žiadny účet, takže sa do portálu nedá
+prihlásiť. Free plán Renderu neposkytuje shell, preto sa príkazy púšťajú
+z vlastného počítača proti vzdialenej databáze.
+
+**Externý connection string** nájdete v Renderi: databáza → *External
+Database URL*.
+
+**Ostrá prevádzka** — bez demo dát:
+
+```bash
+# 1. zaregistrujte sa cez web na svojej Render adrese
+# 2. povýšte svoj účet na správcu
+DATABASE_URL="<external-url>" npm run db:make-admin -- vas@email.sk
+```
+
+**Verejné demo** — s ukážkovými dátami:
+
+```bash
+DATABASE_URL="<external-url>" npm run db:seed
+```
+
+Seed databázu najprv vyprázdni a naplní ukážkovými účtami a 180 dňami
+15-minútových dát.
 
 ### Demo dáta v produkcii
 
