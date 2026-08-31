@@ -23,8 +23,11 @@ export default async function PortalLayout({ children }: LayoutProps<"/portal">)
               <p className="text-xs text-ink-500">{user.email}</p>
             </div>
             <form action={logout}>
+              {/* Text je na úzkych obrazovkách skrytý cez CSS, čím z prvku
+                  zmizne aj prístupný názov — preto explicitný aria-label. */}
               <button
                 type="submit"
+                aria-label="Odhlásiť sa"
                 className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
               >
                 <LogOut size={16} aria-hidden="true" />

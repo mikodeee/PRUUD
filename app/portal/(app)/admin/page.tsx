@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ChevronRight } from "lucide-react";
 import { PageHeader, StatCard } from "@/components/portal/PageHeader";
 import { requireUser } from "@/lib/auth";
 import { getAdminStats, getPendingPoints, getRecentLeads } from "@/lib/db/admin";
@@ -41,6 +43,16 @@ export default async function AdminPage() {
         title="Správa"
         lead="Prehľad platformy, čakajúce overenia a dopyty z webu."
       />
+
+      <div className="mb-8 flex flex-wrap gap-3">
+        <Link
+          href="/portal/admin/pouzivatelia"
+          className="inline-flex items-center gap-2 rounded-full bg-ink-950 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-ink-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+        >
+          Všetci používatelia
+          <ChevronRight size={16} aria-hidden="true" />
+        </Link>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Používatelia" value={formatNumber(stats.users)} accent />

@@ -151,7 +151,23 @@ export function RegisterForm({ defaultProduct }: { defaultProduct?: string }) {
   const [metering, setMetering] = useState<MeteringCheckState>({ status: "idle" });
   const [checking, startCheck] = useTransition();
 
-  const err = state.status === "error" ? state.fieldErrors : undefined;
+  /*
+   * Chyby zo servera platia pre hodnoty, s ktorými sa formulár odoslal.
+   * Keď používateľ pole odvtedy upravil, hlášku prestaneme ukazovať —
+   * inak visí pri poli, ktoré už je opravené, a mätie.
+   */
+  const [dirty, setDirty] = useState<Record<string, boolean>>({});
+  const serverErrors = state.status === "error" ? state.fieldErrors : undefined;
+  const err = serverErrors
+    ? Object.fromEntries(
+        Object.entries(serverErrors).filter(([field]) => !dirty[field]),
+      )
+    : undefined;
+
+  function markClean(field: string) {
+    setDirty((prev) => (prev[field] ? prev : { ...prev, [field]: true }));
+  }
+
   const eicCheck = eic.length === 16 ? validateEic(eic) : null;
 
   /*
@@ -165,6 +181,7 @@ export function RegisterForm({ defaultProduct }: { defaultProduct?: string }) {
   function handleEicChange(raw: string) {
     const value = raw.toUpperCase();
     setEic(value);
+    markClean("eic");
 
     if (value.length !== 16 || !validateEic(value).valid) {
       setMetering({ status: "idle" });
@@ -177,7 +194,11 @@ export function RegisterForm({ defaultProduct }: { defaultProduct?: string }) {
   }
 
   return (
-    <form action={formAction} className="space-y-10">
+    <form
+      action={formAction}
+      onSubmit={() => setDirty({})}
+      className="space-y-10"
+    >
       <fieldset>
         <legend className="font-display text-lg font-semibold text-ink-950">
           1. Čo vás zaujíma
@@ -268,7 +289,14 @@ export function RegisterForm({ defaultProduct }: { defaultProduct?: string }) {
             <label htmlFor="r-name" className="text-sm font-medium text-ink-800">
               Meno a priezvisko
             </label>
-            <input id="r-name" name="name" required autoComplete="name" className={inputClass} />
+            <input
+              id="r-name"
+              name="name"
+              required
+              autoComplete="name"
+              onChange={() => markClean("name")}
+              className={inputClass}
+            />
             {err?.name && <p className="mt-1 text-sm text-red-700">{err.name}</p>}
           </div>
           <div>
@@ -281,6 +309,7 @@ export function RegisterForm({ defaultProduct }: { defaultProduct?: string }) {
               type="email"
               required
               autoComplete="email"
+              onChange={() => markClean("email")}
               className={inputClass}
             />
             {err?.email && <p className="mt-1 text-sm text-red-700">{err.email}</p>}
@@ -303,6 +332,7 @@ export function RegisterForm({ defaultProduct }: { defaultProduct?: string }) {
               required
               minLength={8}
               autoComplete="new-password"
+              onChange={() => markClean("password")}
               className={inputClass}
             />
             {err?.password && <p className="mt-1 text-sm text-red-700">{err.password}</p>}
@@ -317,6 +347,7 @@ export function RegisterForm({ defaultProduct }: { defaultProduct?: string }) {
               type="password"
               required
               autoComplete="new-password"
+              onChange={() => markClean("passwordConfirm")}
               className={inputClass}
             />
             {err?.passwordConfirm && (
@@ -341,15 +372,16 @@ export function RegisterForm({ defaultProduct }: { defaultProduct?: string }) {
       </div>
       {err?.consent && <p className="text-sm text-red-700">{err.consent}</p>}
 
-      {state.status === "error" && (
-        <div
-          role="alert"
-          className="flex items-start gap-3 rounded-card border border-red-300 bg-red-50 p-5"
-        >
-          <XCircle size={20} className="mt-0.5 shrink-0 text-red-700" aria-hidden="true" />
-          <p className="text-red-900">{state.message}</p>
-        </div>
-      )}
+      {state.status === "error" &&
+        Object.keys(dirty).length === 0 && (
+          <div
+            role="alert"
+            className="flex items-start gap-3 rounded-card border border-red-300 bg-red-50 p-5"
+          >
+            <XCircle size={20} className="mt-0.5 shrink-0 text-red-700" aria-hidden="true" />
+            <p className="text-red-900">{state.message}</p>
+          </div>
+        )}
 
       <Button type="submit" size="lg" disabled={pending}>
         {pending && <Loader2 size={18} className="animate-spin" aria-hidden="true" />}

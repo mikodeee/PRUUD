@@ -21,6 +21,23 @@ npm run dev          # http://localhost:3000
 | `demo@pruud.sk` | `demo1234` | klient |
 | `admin@pruud.sk` | `admin1234` | správca |
 
+### Ako sa dostanem do správcovskej sekcie
+
+1. Prihlásiť sa na `/portal/prihlasenie` **správcovským** účtom
+2. V ľavom menu pribudne položka **Správa** — vidia ju len účty s rolou
+   `admin`, klientom sa nezobrazí
+3. **Správa** → **Všetci používatelia** je zoznam všetkých registrovaných;
+   kliknutím na meno sa otvorí detail so všetkými údajmi
+
+Rola sa mení priamo v databáze:
+
+```sql
+update users set role = 'admin' where email = 'vas@email.sk';
+```
+
+Prístup je strážený na serveri, nielen skrytím odkazu — klient, ktorý si
+adresu `/portal/admin` napíše ručne, dostane 404.
+
 ## Skripty
 
 | Príkaz | Čo robí |
