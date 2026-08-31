@@ -26,8 +26,11 @@ services:
         fromDatabase:
           name: pruud-db
           property: connectionString
+      # Major verzia, nie presná — Render tak doplní najnovšiu dostupnú 24.x.
+      # Node 24 je potrebný: migračné skripty sú v TypeScripte a spúšťajú sa
+      # priamo cez `node`, bez build kroku.
       - key: NODE_VERSION
-        value: "24.20.0"
+        value: "24"
       - key: NODE_ENV
         value: production
       # Notifikácie z formulárov. Bez kľúča sa správy len logujú do konzoly

@@ -79,3 +79,31 @@ Projekt je pripravený na Vercel. Pred nasadením:
 1. Nastaviť premenné podľa `.env.example` (`RESEND_API_KEY`, `NOTIFY_EMAIL`)
 2. Prepnúť databázu z PGlite na Postgres (Neon/Supabase) v `lib/db/index.ts`
 3. Upraviť `siteConfig.url` v `lib/site.ts` na produkčnú doménu
+
+## Nasadenie na Render
+
+Repozitár obsahuje `render.yaml` (Blueprint), ktorý vytvorí web službu
+aj Postgres databázu a prepojí ich.
+
+1. Render → **New** → **Blueprint** → vybrať repozitár `mikodeee/PRUUD`
+2. Render prečíta `render.yaml` a ponúkne vytvorenie oboch služieb
+3. Premenné označené `sync: false` sa vypĺňajú ručne v dashboarde
+   (`RESEND_API_KEY`, `NOTIFY_EMAIL`, `EDC_API_URL`, `EDC_API_TOKEN`) —
+   bez nich web funguje, len sa správy z formulárov logujú namiesto odosielania
+4. Migrácie sa spustia automaticky pri každom štarte
+
+### Na čo pozor pri free pláne
+
+- **Postgres na free pláne po 30 dňoch expiruje.** Pre trvalú prevádzku
+  treba platený plán alebo externú databázu (Neon, Supabase).
+- **Web služba po nečinnosti zaspí**, prvý request potom trvá aj minútu.
+- `preDeployCommand` je platená funkcia, preto migrácie bežia
+  v `startCommand`.
+
+### Demo dáta v produkcii
+
+`npm run db:seed` naplní databázu ukážkovými účtami, ktorých heslá sú
+uvedené vyššie v tomto súbore — a ten je vo verejnom repozitári.
+
+Pre verejné demo je to v poriadku (všetky dáta sú vymyslené), pre ostrú
+prevádzku **seed nespúšťajte** a demo účty zmažte.
