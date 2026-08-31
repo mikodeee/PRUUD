@@ -7,6 +7,10 @@ databases:
     databaseName: pruud
     plan: free
     postgresMajorVersion: "16"
+    # Región MUSÍ sedieť s regiónom webovej služby nižšie. Interný hostname
+    # databázy (dpg-…) sa preloží len v rámci toho istého regiónu — inak
+    # štart spadne na "getaddrinfo ENOTFOUND dpg-…".
+    region: frankfurt
 
 services:
   - type: web

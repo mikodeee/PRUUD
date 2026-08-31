@@ -109,6 +109,20 @@ aj Postgres databázu a prepojí ich.
    bez nich web funguje, len sa správy z formulárov logujú namiesto odosielania
 4. Migrácie sa spustia automaticky pri každom štarte
 
+### Databáza a región
+
+Databáza aj webová služba **musia byť v rovnakom regióne**. Render dáva
+službám interný hostname (`dpg-…`), ktorý sa mimo vlastného regiónu
+nepreloží — štart potom zlyhá na `getaddrinfo ENOTFOUND dpg-…`.
+
+V `render.yaml` je preto `region: frankfurt` uvedený aj v bloku
+`databases:`, nielen v `services:`.
+
+Existujúcu databázu presunúť medzi regiónmi nemožno. Ak už vznikla
+v nesprávnom regióne, treba ju v Renderi zmazať a nechať blueprint
+vytvoriť nanovo — alebo do `DATABASE_URL` vložiť **externý** connection
+string, ktorý funguje naprieč regiónmi (za cenu vyššej latencie).
+
 ### Na čo pozor pri free pláne
 
 - **Postgres na free pláne po 30 dňoch expiruje.** Pre trvalú prevádzku
