@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/portal/PageHeader";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Nastavenia",
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function NastaveniaPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requireUser();
 
   return (
     <>

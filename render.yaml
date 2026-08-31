@@ -1,6 +1,6 @@
 # Render Blueprint pre PRUUD.
-# V Renderi: New → Blueprint → vybrať tento repozitár. Vytvorí sa web
-# služba aj Postgres databáza a prepoja sa medzi sebou.
+# V Renderi: New → Blueprint → vybrať repozitár mikodeee/PRUUD.
+# Vytvorí sa web služba aj Postgres databáza a automaticky sa prepoja.
 
 databases:
   - name: pruud-db
@@ -16,9 +16,10 @@ services:
     region: frankfurt
     branch: main
     buildCommand: npm ci && npm run build
-    # Migrácie bežia pri štarte — schéma sa tak dorovná pri každom nasadení.
-    preDeployCommand: npm run db:migrate
-    startCommand: npm start
+    # Migrácie bežia pri štarte, nie cez preDeployCommand — ten je na
+    # Renderi dostupný až v platených plánoch. Drizzle si applikované
+    # migrácie eviduje, takže opakované spustenie nič nepokazí.
+    startCommand: npm run db:migrate && npm start
     healthCheckPath: /
     envVars:
       - key: DATABASE_URL
@@ -29,12 +30,14 @@ services:
         value: "24.20.0"
       - key: NODE_ENV
         value: production
-      # Notifikácie z formulárov. Bez kľúča sa správy len logujú.
+      # Notifikácie z formulárov. Bez kľúča sa správy len logujú do konzoly
+      # a web funguje aj tak.
       - key: RESEND_API_KEY
         sync: false
       - key: NOTIFY_EMAIL
         sync: false
-      # Napojenie na EDC/OKTE — doplniť po podpise zmluvy o poskytovaní údajov.
+      # Napojenie na EDC/OKTE — doplniť až po podpise zmluvy o poskytovaní
+      # údajov. Kým sú prázdne, systém o priebehovom meraní nič netvrdí.
       - key: EDC_API_URL
         sync: false
       - key: EDC_API_TOKEN

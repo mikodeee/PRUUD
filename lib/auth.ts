@@ -1,6 +1,7 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { and, eq, gt } from "drizzle-orm";
 import { db } from "@/lib/db";
@@ -89,4 +90,17 @@ export async function destroySession() {
     await db.delete(sessions).where(eq(sessions.tokenHash, hashToken(token)));
   }
   store.delete(COOKIE_NAME);
+}
+
+/**
+ * Vráti prihláseného používateľa, inak presmeruje na prihlásenie.
+ *
+ * Layout portálu síce tiež stráži prístup, no v App Routeri sa layout
+ * a stránka renderujú paralelne — stránka teda beží aj vtedy, keď layout
+ * práve presmerúva. Bez tejto kontroly by na `null` spadla.
+ */
+export async function requireUser(): Promise<SessionUser> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/portal/prihlasenie");
+  return user;
 }

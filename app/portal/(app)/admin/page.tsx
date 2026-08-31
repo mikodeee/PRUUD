@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader, StatCard } from "@/components/portal/PageHeader";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import { getAdminStats, getPendingPoints, getRecentLeads } from "@/lib/db/admin";
 import { formatNumber } from "@/lib/utils";
 
@@ -25,7 +25,7 @@ const df = new Intl.DateTimeFormat("sk-SK", {
 });
 
 export default async function AdminPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requireUser();
   // Rola sa kontroluje na serveri — skrytie odkazu v navigácii nestačí.
   if (user.role !== "admin") notFound();
 

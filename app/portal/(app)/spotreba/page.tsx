@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader, StatCard } from "@/components/portal/PageHeader";
 import { DailyChart } from "@/components/portal/ConsumptionChart";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import { getDailySeries, getSummary } from "@/lib/db/queries";
 import { formatNumber } from "@/lib/utils";
 
@@ -19,7 +19,7 @@ const RANGES = [
 export default async function SpotrebaPage({
   searchParams,
 }: PageProps<"/portal/spotreba">) {
-  const user = (await getCurrentUser())!;
+  const user = await requireUser();
   const params = await searchParams;
 
   const requested = Number(params.dni);

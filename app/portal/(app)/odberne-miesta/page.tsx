@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { PageHeader } from "@/components/portal/PageHeader";
 import { ButtonLink } from "@/components/ui/Button";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import { getMeteringPoints } from "@/lib/db/queries";
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ const typeLabels = {
 } as const;
 
 export default async function OdberneMiestaPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requireUser();
   const points = await getMeteringPoints(user.id);
 
   return (

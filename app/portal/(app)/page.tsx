@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PageHeader, StatCard } from "@/components/portal/PageHeader";
 import { DailyChart, HourlyProfileChart } from "@/components/portal/ConsumptionChart";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import {
   getDailySeries,
   getHourlyProfile,
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PortalDashboard() {
-  const user = (await getCurrentUser())!;
+  const user = await requireUser();
 
   const [summary, daily, hourly, points] = await Promise.all([
     getSummary(user.id, 30),

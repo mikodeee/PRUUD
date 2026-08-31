@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/portal/PageHeader";
 import { ButtonLink } from "@/components/ui/Button";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import { getSharingGroupsFor } from "@/lib/db/queries";
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ const typeLabels: Record<string, string> = {
 };
 
 export default async function ZdielaniePage() {
-  const user = (await getCurrentUser())!;
+  const user = await requireUser();
   const groups = await getSharingGroupsFor(user.id);
 
   return (

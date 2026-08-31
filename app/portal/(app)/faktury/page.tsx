@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Download } from "lucide-react";
 import { PageHeader } from "@/components/portal/PageHeader";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import { getInvoices } from "@/lib/db/queries";
 import { formatEur } from "@/lib/utils";
 
@@ -23,7 +23,7 @@ const df = new Intl.DateTimeFormat("sk-SK", {
 });
 
 export default async function FakturyPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requireUser();
   const rows = await getInvoices(user.id);
 
   return (

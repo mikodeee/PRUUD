@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { FileText } from "lucide-react";
 import { PageHeader } from "@/components/portal/PageHeader";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import { getDocuments } from "@/lib/db/queries";
 
 export const metadata: Metadata = {
@@ -15,7 +15,7 @@ function formatSize(bytes: number | null) {
 }
 
 export default async function PortalDokumentyPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requireUser();
   const docs = await getDocuments(user.id);
 
   return (
