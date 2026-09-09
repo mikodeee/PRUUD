@@ -52,7 +52,8 @@ export default function HomePage() {
               <p className="claim text-xs text-gold-400">
                 Zdieľanie elektriny na Slovensku
               </p>
-              <h1 className="mt-6 font-display text-4xl leading-[1.08] font-semibold tracking-tight text-balance md:text-6xl">
+              {/* Zlaté podčiarknutie nadväzuje na linky okolo claimu v logu. */}
+              <h1 className="mt-6 font-display text-4xl leading-[1.08] font-semibold tracking-tight text-balance underline decoration-gold-500 decoration-4 underline-offset-[0.18em] md:text-6xl">
                 Energia, ktorá{" "}
                 <span className="text-gold-400">spája</span>
               </h1>
