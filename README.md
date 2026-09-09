@@ -4,15 +4,32 @@ Web a zákaznícky portál pre službu zdieľania elektriny na Slovensku.
 
 ## Spustenie
 
-Node.js je nainštalovaný v `~/.local/node` a pridaný do PATH v `~/.zshrc`.
-V novom termináli je teda `npm` dostupný priamo.
+**Potrebujete Node.js 24 alebo novší.** Nižšie verzie nestačia: migračné
+a seed skripty sú v TypeScripte a spúšťajú sa priamo cez `node`, čo je
+bez príznaku možné až od Node 23.6.
+
+Overenie, čo máte:
+
+```bash
+node --version
+```
+
+Ak Node nemáte alebo je starší, nainštalujte ho ľubovoľne — stiahnutím
+z [nodejs.org](https://nodejs.org) (LTS), cez `brew install node`, alebo
+správcom verzií (`nvm install`, `fnm use` — repozitár obsahuje `.nvmrc`).
+
+Potom stačia štyri príkazy:
 
 ```bash
 npm install
 npm run db:migrate   # vytvorí lokálnu databázu
-npm run db:seed      # naplní demo dátami
+npm run db:seed      # naplní demo dátami (180 dní 15-min záznamov)
 npm run dev          # http://localhost:3000
 ```
+
+Databáza je vstavaná (PGlite) a vznikne v priečinku `.pglite/` — netreba
+inštalovať ani spúšťať žiadny databázový server. Celý postup od klonu po
+bežiaci web trvá pár minút.
 
 **Demo prihlásenie do portálu**
 
